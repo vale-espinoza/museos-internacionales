@@ -23,8 +23,6 @@ Este documento se compuso con harto copy/paste
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <title>Grandes museos internacionales alrededor del mundo</title>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
 </head>
@@ -54,7 +52,7 @@ Este documento se compuso con harto copy/paste
         <div class="overlay"></div>
         <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
             <!--encontré un video de un condor-->
-            <source src="hermitage.mp4" type="video/mp4">
+            <source src="museo-fuente.mp4" type="video/mp4">
         </video>
         <div class="container h-100">
             <div class="d-flex h-100 text-center align-items-center">
@@ -69,7 +67,7 @@ Este documento se compuso con harto copy/paste
     <section id="map">
         <div id="mapid" style="width: 100%; height: 70vh;"></div>
     </section>
-    <section id="detalles" class="bg-light">
+    <section id="detalles" class="bg-dark">
         <div class="container">
             <div class="row py-5" id="parques">
                 <!--aquí dentro va lo que mande el $("#parques").append()-->
@@ -93,7 +91,7 @@ Este documento se compuso con harto copy/paste
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script>
         // Lo primero es obtener un JSON y parsearlo en una variable de nombre data
-        $.getJSON("https://api.myjson.com/bins/bgweo", function(data) { 
+        $.getJSON("https://api.myjson.com/bins/8fdns", function(data) { 
             // Si imprimes data en consola logras dos cosas
             // Lo primero es comprobar el parseo de JSON requerido
             // Lo segundo es conocer la estructura del JSON parseado
@@ -102,12 +100,23 @@ Este documento se compuso con harto copy/paste
             var mymap = L.map('mapid').setView([50, 11], 3);
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
                 maxZoom: 15,
-                id: 'mapbox.outdoors' //otras opciones: mapbox.satellite, mapbox.streets, mapbox.dark, mapbox.light
+                id: 'mapbox.dark' //otras opciones: mapbox.satellite, mapbox.streets, mapbox.dark, mapbox.light
             }).addTo(mymap);
+            
+            var iconoazul = L.icon({
+    iconUrl: 'iconoturquesa.png',
+
+    iconSize:     [45, 45], // size of the icon
+    
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+   
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+            
             // Después puedes explorar el arreglo en la variable de nombre data con un ciclo for
             for (var x = 0; x < data.length; x++) {
                 // con esto se agregan puntos en el plano por cada dato
-                L.marker([data[x].ubicacion[0], data[x].ubicacion[1]]).addTo(mymap).bindPopup(data[x].nombre).closePopup();
+                L.marker([data[x].ubicacion[0], data[x].ubicacion[1]],{icon: iconoazul}).addTo(mymap).bindPopup(data[x].nombre).closePopup();
                 // aprovechando el ciclo for, podemos crear otros elementos, fuera del mapa
                 // revisen el primer ejemplo en https://getbootstrap.com/docs/4.0/components/card/
                 var primero =   "<div class=\"col-sm-4 col-lg-3 my-3\">";
@@ -115,14 +124,23 @@ Este documento se compuso con harto copy/paste
                         var tercero =   "<img src=\"" + data[x].foto + "\" class=\"card-img-top\">";
                         var cuarto  =   "<div class=\"card-body\">";
                             var quinto  =   "<h5 class=\"card-title\">" + data[x].nombre + "</h5>"
+                            var country  =   "<p class=\"card-title\">" + data[x].pais + "</p>"
                             var sexto   =   "<p class=\"card-text\">" + data[x].visitantes + " visitantes </p>";
                             var obra   =   "<p class=\"card-text\">" + data[x].obras + " obras </p>";
-                            var septimo =   "<a href=\"" + data[x].url + "\" target=\"_blank\" class=\"btn btn-info btn-sm\">Página web oficial</a>";
+                
+              if (data[x].pais == 'Francia' || data[x].pais == 'Reino Unido' || data[x].pais == 'España') {
+                        var sextoymedio  =   "<p id=\"sextoymedio\" class=\"card-text\">Está dentro de la Unión Europea</p>"
+                      }
+                      else {
+                        var sextoymedio = "<p id=\"sextoymedio\" class=\"card-text\">NO está dentro de la Unión Europea</p>"
+                      }
+                
+                            var septimo =   "<a href=\"" + data[x].url + "\" target=\"_blank\" class=\"btn btn-info btn-sm\">Página Oficial</a>";
                         var octavo  =   "</div>";                
                     var noveno  =   "</div>";
                 var decimo  =   "</div>";
                 // esto se agrega tantas veces como puntos en el mapa, porque estamos dentro del mismo ciclo for
-                $("#parques").append(primero + segundo + tercero + cuarto + quinto + sexto + obra + septimo + octavo + noveno + decimo);
+                $("#parques").append(primero + segundo + tercero + cuarto + quinto + country + sexto + obra + sextoymedio + septimo + octavo + noveno + decimo);
             }
         });
         //Agrego lo siguiente para que al clic del menú la página suba y baje en 1 segundo, suavecito
@@ -138,6 +156,18 @@ Este documento se compuso con harto copy/paste
               }
             }
         });
+        
+//acá les dejo la modificación del menú
+// cuando el scroll se aleja más de 500 pixeles del tope, se agrega una clase
+// en caso contrario, se quita tal clase
+    $(window).scroll(function(){
+         if ($(this).scrollTop() > 500) {
+          $('nav').addClass("bg-info");
+         } else {
+          $('nav').removeClass("bg-info");
+         }
+      });
+        
     </script>
     
 </body>

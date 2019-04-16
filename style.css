@@ -1,12 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Archivo+Black|Volkhov');
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Oswald');
 
 body{
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
 }
 
+h5{
+    font-weight:bold;
+    color:darkturquoise;
+}
+
 nav{
-  font-family: 'Lato', sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-weight: 400;
 }
 
