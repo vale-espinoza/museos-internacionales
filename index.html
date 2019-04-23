@@ -1,18 +1,3 @@
-<!doctype html>
-
-<!--
-Este documento se compuso con harto copy/paste
-1. El Starter Template de Bootstrap - en https://getbootstrap.com/docs/4.3/getting-started/introduction/
-2. El menú lo copiamos de los ejemplos de Bootstrap - https://getbootstrap.com/docs/4.3/examples/
-3. El header con un video lo copiamos de Startbootrap - https://startbootstrap.com/snippets/video-header/
-4. Luego, se agrega la biblioteca de Leaflet (que pueden copiar de ejercicios de las clases 2 y 3) - https://leafletjs.com/examples/quick-start/
-5. Finalmente, cuando intentamos programar la aparición automática de puntos en Leaflet nos damos cuenta que el jquery.slim.min.js no comprende la función $.getJSON(). Por eso: 
-5.1. Donde decía:
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-5.2. Ahora debe decir:    
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
--->
-
 <html lang="es">
 
 <head>
@@ -67,10 +52,28 @@ Este documento se compuso con harto copy/paste
     <section id="map">
         <div id="mapid" style="width: 100%; height: 70vh;"></div>
     </section>
-    <section id="detalles" class="bg-dark">
+    <section id="detalles" class="bg-info">
+          <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-12 py-3">
+                    Selecciona museos según Continente 
+                    <select id="selector" onchange="mostrador()">
+                        <option>Todos los museos</option>
+                        <option>Museos de Asia</option>
+                        <option>Museos de Europa</option>
+                        <option>Museos de América</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="bg-dark">
         <div class="container">
-            <div class="row py-5" id="parques">
-                <!--aquí dentro va lo que mande el $("#parques").append()-->
+            <div class="row py-3">
+                <div class="card-columns" id="museos">
+                    <!--aquí hay un cambio-->
+                </div>
             </div>
         </div>
     </section>
@@ -91,7 +94,7 @@ Este documento se compuso con harto copy/paste
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script>
         // Lo primero es obtener un JSON y parsearlo en una variable de nombre data
-        $.getJSON("https://api.myjson.com/bins/8fdns", function(data) { 
+        $.getJSON("https://api.myjson.com/bins/svu5s", function(data) { 
             // Si imprimes data en consola logras dos cosas
             // Lo primero es comprobar el parseo de JSON requerido
             // Lo segundo es conocer la estructura del JSON parseado
@@ -117,32 +120,50 @@ Este documento se compuso con harto copy/paste
             for (var x = 0; x < data.length; x++) {
                 // con esto se agregan puntos en el plano por cada dato
                 L.marker([data[x].ubicacion[0], data[x].ubicacion[1]],{icon: iconoazul}).addTo(mymap).bindPopup(data[x].nombre).closePopup();
-                // aprovechando el ciclo for, podemos crear otros elementos, fuera del mapa
-                // revisen el primer ejemplo en https://getbootstrap.com/docs/4.0/components/card/
-                var primero =   "<div class=\"col-sm-4 col-lg-3 my-3\">";
-                    var segundo =   "<div class=\"card\">";
+                    var segundo =   "<div class=\"card " + data[x].continente + "\">";
                         var tercero =   "<img src=\"" + data[x].foto + "\" class=\"card-img-top\">";
                         var cuarto  =   "<div class=\"card-body\">";
                             var quinto  =   "<h5 class=\"card-title\">" + data[x].nombre + "</h5>"
                             var country  =   "<p class=\"card-title\">" + data[x].pais + "</p>"
                             var sexto   =   "<p class=\"card-text\">" + data[x].visitantes + " visitantes </p>";
                             var obra   =   "<p class=\"card-text\">" + data[x].obras + " obras </p>";
+                            var septimo =   "<p class=\"card-text\">Continente: " + data[x].continente + "</p>" ;
                 
-              if (data[x].pais == 'Francia' || data[x].pais == 'Reino Unido' || data[x].pais == 'España') {
+                 if (data[x].pais == 'Francia' || data[x].pais == 'Reino Unido' || data[x].pais == 'España') {
                         var sextoymedio  =   "<p id=\"sextoymedio\" class=\"card-text\">Está dentro de la Unión Europea</p>"
                       }
                       else {
                         var sextoymedio = "<p id=\"sextoymedio\" class=\"card-text\">NO está dentro de la Unión Europea</p>"
                       }
-                
-                            var septimo =   "<a href=\"" + data[x].url + "\" target=\"_blank\" class=\"btn btn-info btn-sm\">Página Oficial</a>";
-                        var octavo  =   "</div>";                
+                        var octavo  = "<a href=\"" + data[x].url + "\" target=\"_blank\" class=\"btn btn-info btn-sm\">Página Oficial</a>" ;                
                     var noveno  =   "</div>";
-                var decimo  =   "</div>";
                 // esto se agrega tantas veces como puntos en el mapa, porque estamos dentro del mismo ciclo for
-                $("#parques").append(primero + segundo + tercero + cuarto + quinto + country + sexto + obra + sextoymedio + septimo + octavo + noveno + decimo);
+                $("#museos").append(segundo + tercero + cuarto + quinto + country + sexto + obra + sextoymedio + septimo + octavo + noveno);
             }
-        });
+            
+        })
+        
+         function mostrador() {
+            
+            var x = document.getElementById("selector").value;
+             
+             console.log(x);
+            
+            if (x.includes("América")) {
+                $(".america").show();
+                $(".europa, .asia").hide()
+            } else if (x.includes("Europa")) {
+                $(".europa").show()
+                $(".america, .asia").hide()
+            } else if (x.includes("Asia")) {
+                $(".asia").show();
+                $(".america, .europa").hide()
+            } else {
+                $(".america, .asia, .europa").show()                
+            }
+
+        } // aquí cerramos la función que trabaja con el select
+
         //Agrego lo siguiente para que al clic del menú la página suba y baje en 1 segundo, suavecito
         $('a[href*="#"]:not([href="#"])').click(function() {
             if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
@@ -169,6 +190,31 @@ Este documento se compuso con harto copy/paste
       });
         
     </script>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>   
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
+   <script>
+       var museos;
+
+       function preload(){
+         museos = loadJSON("https://api.myjson.com/bins/svu5s");
+       }
+
+       function setup() {
+         createCanvas(windowWidth,400);
+         rectMode(CENTER);
+         textSize(10);
+         for (var o = 0; o < 9; o++){
+         print(museos[o].nombre + ": " + museos[o].visitantes);
+         ellipse((width/10)*(o+1),height/2,museos[o].visitantes/100000,museos[o].visitantes/100000);
+           text(museos[o].nombre,(width/10)*(o+1),(height/2)+100,50,50)
+         }
+       }
+       function draw() {
+           // hay casos en lo que puedes dibujar en el setup
+       }     
+   </script>
     
 </body>
 
